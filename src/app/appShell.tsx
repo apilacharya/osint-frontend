@@ -66,22 +66,20 @@ export const AppShell = () => {
   const user = authSessionQuery.data?.user;
   const isLoggedIn = authSessionQuery.data?.authenticated === true;
 
-  const resetUiState = useUiStore((state) => ({
-    setSelectedSearchRunId: state.setSelectedSearchRunId,
-    setSelectedFindingId: state.setSelectedFindingId,
-    setActiveCategory: state.setActiveCategory,
-    setTransientRun: state.setTransientRun,
-    setLastSearchParams: state.setLastSearchParams,
-    setPendingSearchQuery: state.setPendingSearchQuery
-  }));
+  const setSelectedSearchRunId = useUiStore((state) => state.setSelectedSearchRunId);
+  const setSelectedFindingId = useUiStore((state) => state.setSelectedFindingId);
+  const setActiveCategory = useUiStore((state) => state.setActiveCategory);
+  const setTransientRun = useUiStore((state) => state.setTransientRun);
+  const setLastSearchParams = useUiStore((state) => state.setLastSearchParams);
+  const setPendingSearchQuery = useUiStore((state) => state.setPendingSearchQuery);
 
   async function onLogout() {
-    resetUiState.setSelectedSearchRunId(null);
-    resetUiState.setSelectedFindingId(null);
-    resetUiState.setActiveCategory("ALL");
-    resetUiState.setTransientRun(null);
-    resetUiState.setLastSearchParams(null);
-    resetUiState.setPendingSearchQuery(null);
+    setSelectedSearchRunId(null);
+    setSelectedFindingId(null);
+    setActiveCategory("ALL");
+    setTransientRun(null);
+    setLastSearchParams(null);
+    setPendingSearchQuery(null);
     void queryClient.cancelQueries({ queryKey: ["search-data"] });
     void queryClient.cancelQueries({ queryKey: ["search-run"] });
     void queryClient.cancelQueries({ queryKey: ["search-runs"] });
