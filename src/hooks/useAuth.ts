@@ -5,7 +5,10 @@ import type { LoginInput, RegisterInput } from "../types/api";
 export const useAuthSession = () =>
   useQuery({
     queryKey: ["auth-session"],
-    queryFn: apiClient.getAuthSession
+    queryFn: apiClient.getAuthSession,
+    staleTime: 0,
+    refetchOnMount: true,
+    gcTime: 0
   });
 
 export const useRegister = () =>

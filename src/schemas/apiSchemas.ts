@@ -20,8 +20,6 @@ export const toSuccessEnvelopeSchema = <T extends z.ZodTypeAny>(dataSchema: T) =
     error: z.null()
   });
 
-
-
 const entitySchema = z.object({
   id: z.string(),
   name: z.string(),

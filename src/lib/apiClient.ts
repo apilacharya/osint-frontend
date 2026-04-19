@@ -55,8 +55,6 @@ const parseSuccessData = <T extends z.ZodTypeAny>(payload: unknown, dataSchema: 
   return envelope.data;
 };
 
-
-
 const request = async <T extends z.ZodTypeAny>(
   method: "GET" | "POST",
   path: string,
@@ -89,8 +87,6 @@ const request = async <T extends z.ZodTypeAny>(
     throw createApiClientError("Request failed.", 500);
   }
 };
-
-
 
 export const apiClient = {
   register: (input: RegisterInput) => request("POST", "/auth/register", authSessionSchema, input),

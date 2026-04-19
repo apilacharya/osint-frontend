@@ -27,7 +27,7 @@ export const FindingDetail = ({ finding }: Props) => {
 
   return (
     <div className="max-h-[70vh] space-y-4 overflow-y-auto pr-1">
-      {/* Header with optional image */}
+      {}
       <div className="flex items-start gap-3">
         {imageContext && (
           <img
@@ -43,7 +43,7 @@ export const FindingDetail = ({ finding }: Props) => {
         </div>
       </div>
 
-      {/* Metadata grid */}
+      {}
       <div className="grid grid-cols-2 gap-x-4 gap-y-3 rounded-lg bg-slate-50 p-3 text-sm">
         <div>
           <dt className="text-xs font-medium uppercase tracking-wide text-slate-400">Category</dt>
@@ -76,7 +76,7 @@ export const FindingDetail = ({ finding }: Props) => {
         </div>
       </div>
 
-      {/* Risk assessment */}
+      {}
       {finding.riskAssessment && (
         <div
           className={clsx(
@@ -91,7 +91,7 @@ export const FindingDetail = ({ finding }: Props) => {
         </div>
       )}
 
-      {/* Raw payload */}
+      {}
       <details className="group">
         <summary className="cursor-pointer select-none text-xs font-semibold uppercase tracking-wide text-slate-400 transition-colors hover:text-slate-600">
           Raw payload

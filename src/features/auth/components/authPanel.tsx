@@ -138,7 +138,7 @@ export const AuthPanel = () => {
         toast.success("Logged in successfully.");
       }
 
-      await queryClient.invalidateQueries({ queryKey: ["auth-session"] });
+      await queryClient.refetchQueries({ queryKey: ["auth-session"] });
       await queryClient.invalidateQueries({ queryKey: ["search-runs"] });
       form.setValue("password", "");
     } catch (error) {
