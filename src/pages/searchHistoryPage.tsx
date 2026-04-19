@@ -151,8 +151,10 @@ export const SearchHistoryPage = () => {
 
   if (!isLoggedIn) {
     return (
-      <Card className="p-5">
-        <p className="text-sm text-slate-700">Login is required to view search history.</p>
+      <Card className="p-5 bg-red-50">
+        <p className="text-sm text-red-500">
+          Login is required to unlock search history and access your previous investigations.
+        </p>
       </Card>
     );
   }

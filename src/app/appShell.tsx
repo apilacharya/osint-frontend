@@ -24,7 +24,7 @@ function Header({ user, isLoggedIn, onLogout }: { user: any; isLoggedIn: boolean
         <div className="flex items-center gap-2 text-right">
           <div>
             <p className="text-sm font-semibold text-slate-900">{user?.name ?? "Guest Mode"}</p>
-            <p className="text-xs text-slate-500">{user?.email ?? "Login to unlock history and report archive."}</p>
+            <p className="text-xs text-red-500">{user?.email ?? "Login to unlock history and report archive."}</p>
           </div>
           {isLoggedIn && (
             <Button type="button" variant="outline" size="sm" onClick={onLogout}>
