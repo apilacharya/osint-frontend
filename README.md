@@ -2,7 +2,7 @@
 
 This frontend is the React client for an OSINT prototype that accepts a company/person name, fetches aggregated intelligence from backend adapters, and presents categorized findings with history and report workflows.
 
-The UI is built for practical analyst usage: fast search loop, clear source attribution, and predictable error feedback through standardized API error codes.
+The UI is built for practical analyst usage: fast search loop, clear source attribution, and predictable error feedback through standardized HTTP-style error codes.
 
 ---
 
@@ -128,7 +128,7 @@ This frontend expects the backend to return a standard envelope:
   "data": null,
   "meta": {},
   "error": {
-    "code": 1001,
+    "code": 400,
     "type": "VALIDATION_ERROR",
     "message": "Readable message",
     "details": {}
@@ -136,16 +136,22 @@ This frontend expects the backend to return a standard envelope:
 }
 ```
 
-Known numeric code mapping used in UI toast logic:
+### HTTP-Style Error Code Mapping
 
-- `1001` Validation error
-- `1002` Invalid/missing query parameters
-- `1003` Entity resolution failed
-- `1004` Adapter upstream error
-- `1005` Rate limit exceeded
-- `1006` Resource not found
-- `1007` Report generation failed
-- `1099` Internal server error
+- `400` — Validation error or invalid query parameters
+- `404` — Resource not found
+- `422` — Entity resolution failed (no high-confidence matches)
+- `429` — Rate limit exceeded
+- `500` — Report generation failed or internal server error
+- `502` — Adapter upstream error (external intelligence source unavailable)
+
+Error responses always include:
+- `code` (HTTP-style status code: 400, 404, 422, 429, 500, 502)
+- `type` (error classification: VALIDATION_ERROR, RESOURCE_NOT_FOUND, etc.)
+- `message` (readable user-facing message)
+- `details` (optional structured error details for debugging)
+
+Frontend toast messages are automatically mapped from error codes to consistent, user-friendly messages.
 
 ---
 
@@ -182,54 +188,3 @@ App default URL: `http://localhost:5173`
 - `pnpm lint` — run ESLint
 - `pnpm build` — type-check and production build
 - `pnpm preview` — preview production build locally
-
----
-
-## 8. User Flows
-
-### Search flow
-
-1. Fill target and optional context.
-2. Submit form (URL query params are updated).
-3. Query is executed and results are rendered by category.
-4. Clicking a finding opens detailed metadata.
-
-### History flow (authenticated)
-
-1. View previous search runs.
-2. Click a record to return to homepage with URL params restored.
-3. Search form auto-hydrates from URL and reruns accordingly.
-
-### Report flow (authenticated)
-
-1. Create report from a search run.
-2. View report records in Reports page.
-3. Download generated markdown/pdf artifact.
-
----
-
-## 9. UI/UX and State Handling
-
-- Loading/empty/error states are explicitly handled in search/history/reports.
-- Pagination is enabled for long lists to keep dashboard/list screens clean.
-- Query cancellation/reset is applied when navigating away from homepage flows.
-- Form and URL are synchronized to support reproducibility and shareable state.
-
----
-
-## 10. Deliverables Checklist (Frontend Scope)
-
-- [x] Setup and run instructions
-- [x] Environment variable documentation
-- [x] Architecture and folder structure explanation
-- [x] API envelope expectations and error code mapping
-- [x] Search/history/report UI behavior summary
-- [ ] Hosted frontend URL (add after deployment)
-- [ ] Sample generated report link/file reference (add after generation)
-
----
-
-## 11. Deployment Notes
-
-The frontend is deployment-ready for Vercel/Netlify/static hosting.  
-Ensure `VITE_API_BASE_URL` points to the deployed backend API and CORS allowlist includes the frontend origin.

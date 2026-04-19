@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Icon } from "@iconify/react";
 import { useAuthSession, useLogin, useRegister } from "../../../hooks/useAuth";
 import { getErrorMessageFromCode } from "../../../lib/errorMessages";
 import type { ApiClientError } from "../../../lib/apiClient";
@@ -28,18 +29,74 @@ const authFormSchema = z.object({
 });
 
 type AuthFormInput = z.infer<typeof authFormSchema>;
+type AuthMode = "login" | "register";
+
+function AuthModeToggle({ mode, onModeChange }: { mode: AuthMode; onModeChange: (m: AuthMode) => void }) {
+  return (
+    <div className="flex gap-2">
+      <Button
+        type="button"
+        onClick={() => onModeChange("login")}
+        variant={mode === "login" ? "default" : "ghost"}
+        size="sm"
+      >
+        Login
+      </Button>
+      <Button
+        type="button"
+        onClick={() => onModeChange("register")}
+        variant={mode === "register" ? "default" : "ghost"}
+        size="sm"
+      >
+        Register
+      </Button>
+    </div>
+  );
+}
+
+function PasswordInput({ value, showPassword, onToggleShow, error }: any) {
+  return (
+    <>
+      <div className="relative">
+        <Input
+          type={showPassword ? "text" : "password"}
+          {...value}
+          placeholder="Password"
+          className="pr-10"
+        />
+        <button
+          type="button"
+          title={showPassword ? "Hide password" : "Show password"}
+          onClick={onToggleShow}
+          className="absolute inset-y-0 right-0 inline-flex items-center px-3 text-slate-500 hover:text-slate-700 transition-colors"
+        >
+          <Icon icon={showPassword ? "mage:eye-off" : "mage:eye"} className="h-4 w-4" />
+        </button>
+      </div>
+      {error && <p className="mt-1 text-xs text-red-600">{error.message}</p>}
+    </>
+  );
+}
+
+function UserProfile({ user }: { user: any }) {
+  return (
+    <div className="space-y-2">
+      <p className="text-sm font-semibold text-slate-900">{user.name}</p>
+      <p className="text-xs text-slate-500">{user.email}</p>
+      <p className="text-xs text-slate-500">Use the top navbar to logout.</p>
+    </div>
+  );
+}
 
 export const AuthPanel = () => {
-  const [mode, setMode] = useState<"login" | "register">("login");
+  const [mode, setMode] = useState<AuthMode>("login");
   const [showPassword, setShowPassword] = useState(false);
+
   const form = useForm<AuthFormInput>({
     resolver: zodResolver(authFormSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      password: ""
-    }
+    defaultValues: { name: "", email: "", password: "" }
   });
+
   const sessionQuery = useAuthSession();
   const registerMutation = useRegister();
   const loginMutation = useLogin();
@@ -48,11 +105,11 @@ export const AuthPanel = () => {
   const isLoggedIn = sessionQuery.data?.authenticated === true;
   const activeUser = sessionQuery.data?.user;
 
-  const onAuthError = (error: unknown) => {
+  function onAuthError(error: unknown) {
     const apiError = error as ApiClientError;
     const explicitMessage = apiError.message?.trim();
     toast.error(explicitMessage || getErrorMessageFromCode(apiError.code));
-  };
+  }
 
   const onSubmit = form.handleSubmit(async (values) => {
     try {
@@ -90,64 +147,36 @@ export const AuthPanel = () => {
   });
 
   if (isLoggedIn && activeUser) {
-    return (
-      <div className="space-y-2">
-        <p className="text-sm font-semibold text-slate-900">{activeUser.name}</p>
-        <p className="text-xs text-slate-500">{activeUser.email}</p>
-        <p className="text-xs text-slate-500">Use the top navbar to logout.</p>
-      </div>
-    );
+    return <UserProfile user={activeUser} />;
   }
 
   return (
     <div className="space-y-3">
-      <div className="flex gap-2">
-        <Button
-          type="button"
-          onClick={() => setMode("login")}
-          variant={mode === "login" ? "default" : "ghost"}
-          size="sm"
-        >
-          Login
-        </Button>
-        <Button
-          type="button"
-          onClick={() => setMode("register")}
-          variant={mode === "register" ? "default" : "ghost"}
-          size="sm"
-        >
-          Register
-        </Button>
-      </div>
+      <AuthModeToggle mode={mode} onModeChange={setMode} />
       <form className="space-y-2" onSubmit={onSubmit}>
         {mode === "register" && (
-          <Input {...form.register("name")} placeholder="Name" />
-        )}
-        {mode === "register" && form.formState.errors.name?.message && (
-          <p className="text-xs text-red-600">{form.formState.errors.name.message}</p>
+          <>
+            <Input {...form.register("name")} placeholder="Name" />
+            {form.formState.errors.name?.message && (
+              <p className="text-xs text-red-600">{form.formState.errors.name.message}</p>
+            )}
+          </>
         )}
         <Input {...form.register("email")} placeholder="Email" />
-        {form.formState.errors.email?.message && <p className="text-xs text-red-600">{form.formState.errors.email.message}</p>}
-        <div className="relative">
-          <Input
-            type={showPassword ? "text" : "password"}
-            {...form.register("password")}
-            placeholder="Password"
-            className="pr-10"
-          />
-          <button
-            type="button"
-            title={showPassword ? "Hide password" : "Show password"}
-            onClick={() => setShowPassword((current) => !current)}
-            className="absolute inset-y-0 right-0 inline-flex items-center px-3 text-slate-500 hover:text-slate-700"
-          >
-            {showPassword ? "Hide" : "Show"}
-          </button>
-        </div>
-        {form.formState.errors.password?.message && (
-          <p className="text-xs text-red-600">{form.formState.errors.password.message}</p>
+        {form.formState.errors.email?.message && (
+          <p className="text-xs text-red-600">{form.formState.errors.email.message}</p>
         )}
-        <Button type="submit" disabled={registerMutation.isPending || loginMutation.isPending} className="w-full">
+        <PasswordInput
+          value={form.register("password")}
+          showPassword={showPassword}
+          onToggleShow={() => setShowPassword((current) => !current)}
+          error={form.formState.errors.password}
+        />
+        <Button
+          type="submit"
+          disabled={registerMutation.isPending || loginMutation.isPending}
+          className="w-full"
+        >
           {mode === "register" ? "Create account" : "Login"}
         </Button>
       </form>
