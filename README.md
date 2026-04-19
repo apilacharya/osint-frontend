@@ -4,6 +4,11 @@ This frontend is the React client for an OSINT prototype that accepts a company/
 
 The UI is built for practical analyst usage: fast search loop, clear source attribution, and predictable error feedback through standardized HTTP-style error codes.
 
+## Test Account
+
+Email: test@gmail.com
+Password: Test@12345
+
 ---
 
 ## 1. Project Overview
